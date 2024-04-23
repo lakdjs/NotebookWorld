@@ -18,9 +18,9 @@ namespace PlayerSystem
             _rb.velocity = new Vector2(dir.x * _speed, _rb.velocity.y);
         }
 
-        public void Jump()
+        public void Jump(int jumpIter)
         {
-            _rb.velocity = new Vector2(_rb.velocity.x, _jumpforce);
+            _rb.AddForce(Vector2.up * _jumpforce * jumpIter);
         }
     }
 }

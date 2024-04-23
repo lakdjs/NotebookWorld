@@ -15,6 +15,10 @@ namespace InputSystem
         private Vector2 _moveDir = new Vector2();
 
         private bool _isFaceRight = true;
+
+        private bool _jumpControl = false;
+        private int _jumpIteration = 0;
+        private int _jumpValueIteration = 60;
         public void Construct(Player player, PlayerMovement playerMovement)
         {
             _player = player;
@@ -54,14 +58,43 @@ namespace InputSystem
             _moveDir = new Vector2(horizontal, vertical);
             _player.PlayerAnimator.SetFloat("MoveX", Math.Abs(_moveDir.x));
             _playerMovement.Move(_moveDir);
+            if (vertical < 0)
+            {
+                Physics2D.IgnoreLayerCollision(7,8,true);
+                Invoke("IgnoreLayerOff", 0.5f);
+            }
         }
 
         private void ReadJump()
         {
-            if (Input.GetKeyDown(KeyCode.Space) && _player.OnGround)
+            if (Input.GetKey(KeyCode.Space))
             {
-                _playerMovement.Jump();
+                if (_player.OnGround)
+                {
+                    _jumpControl = true;
+                }
             }
+            else
+            {
+                _jumpControl = false;
+            }
+
+            if (_jumpControl)
+            {
+                if (_jumpIteration++ < _jumpValueIteration)
+                {
+                    _playerMovement.Jump(_jumpIteration);
+                }
+            }
+            else
+            {
+                _jumpIteration = 0;
+            }
+        }
+
+        void IgnoreLayerOff()
+        {
+            Physics2D.IgnoreLayerCollision(7,8,false);
         }
     }
 }
